@@ -1,9 +1,9 @@
 module instruction_memory (
-    input [31:0] read_address,  // 32 bit memory address
-    output reg [31:0] instruction  // 32 bit instruction register
+    input [31:0] read_address, // 32 bit memory address
+    output reg [31:0] instruction // 32 bit instruction register
     );
-
-    reg [31:0] instr_memory [255:0],    // since memory is byte addressable, 2^30 words could be supported, but 256 words for now
+    
+    reg [31:0] instr_memory [255:0];    // since memory is byte addressable, 2^30 words could be supported, but 256 words for now
 
     initial begin 
 		$readmemb("instruction.mem", instr_memory); // read from a file called instruction.mem at first
@@ -17,7 +17,7 @@ endmodule
 module data_memory (
     input [31:0] read_address, write_address, write_data, // 32 bit address and data
     input sig_mem_read, sig_mem_write, // set to 1 is data_memory is to be read from / written to respectively, 0 otherwise
-    output reg [31:0] read_data, // 32 bit read data
+    output reg [31:0] read_data // 32 bit read data
     );
 
     reg [31:0] data_memory [255:0]; // 256 words of data memory
@@ -117,7 +117,7 @@ module control_unit (
         // first set all signals to 0
         sig_reg_dst     = 1'b0;
         sig_reg_write   = 1'b0;
-        sig_reg_alu_src = 1'b0;
+        sig_alu_src     = 1'b0;
         sig_mem_read    = 1'b0;
         sig_mem_write   = 1'b0;
         sig_mem_to_reg  = 1'b0;
@@ -200,7 +200,7 @@ module add_shifter (
     output reg [31:0] branch_next_pc
     );
 
-    always @(pc, sext_immediate) begin
+    always @(next_pc, sext_immediate) begin
         branch_next_pc = next_pc + (sext_immediate << 2);
     end
 endmodule
