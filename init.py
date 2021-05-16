@@ -1,16 +1,13 @@
 # initialize instruction memory, data memory, and register files with zeros
-
+zeros32 = "0" * 32 + "\n"
 with open("instruction.mem", 'wb') as instruction_file:
-    zeros = "0" * 32 * 256
-    instruction_file.write(bytes(zeros, 'utf-8'))
+    instruction_file.write(bytes(zeros32 * 256, 'utf-8'))
 
-with open("data.mem", 'wb') as data_file:
-    zeros = "0" * 32 * 256
-    data_file.write(bytes(zeros, 'utf-8'))
+with open("data.mem", 'wb') as data_file: 
+    data_file.write(bytes(zeros32 * 256, 'utf-8'))
 
-with open("regisers.mem", 'wb') as register_file:
-    zeros = "0" * 32 * 32
-    register_file.write(bytes(zeros, 'utf-8'))
+with open("registers.mem", 'wb') as register_file:
+    register_file.write(bytes(zeros32 * 32, 'utf-8'))
 
 # parse assembly from test.asm and write to instruction file
 asm = open("test.asm")
@@ -40,7 +37,7 @@ def reg_to_5bit(reg):
     return bytes("{:0>5b}".format(int(reg[1:])), 'utf-8')
 
 def int_to_16bit(offset):
-    return bytes("{:0>16}".format(offset), 'utf-8')
+    return bytes("{:0>16b}".format(int(offset)), 'utf-8')
 
 instructions = asm.readlines()
 for instr in instructions:
@@ -72,6 +69,8 @@ for instr in instructions:
         instruction_file.write(reg_to_5bit(instr[1]))
         instruction_file.write(reg_to_5bit(instr[2]))
         instruction_file.write(int_to_16bit(instr[3]))
+
+    instruction_file.write(bytes("\n", 'utf=8'))
 
 asm.close()
 instruction_file.close()
