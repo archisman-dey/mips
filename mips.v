@@ -3,7 +3,7 @@ module instruction_memory (
     output reg [31:0] instruction // 32 bit instruction register
     );
     
-    reg [31:0] instr_memory [255:0];    // since memory is byte addressable, 2^30 words could be supported, but 256 words for now
+    reg [31:0] instr_memory [0:255];    // since memory is byte addressable, 2^30 words could be supported, but 256 words for now
 
     initial begin 
 		$readmemb("instruction.mem", instr_memory); // read from a file called instruction.mem at first
@@ -20,7 +20,7 @@ module data_memory (
     output reg [31:0] read_data // 32 bit read data
     );
 
-    reg [31:0] data_memory [255:0]; // 256 words of data memory
+    reg [31:0] data_memory [0:255]; // 256 words of data memory
 
     initial begin 
 		$readmemb("data.mem", data_memory); // read from a file called data.mem at first
@@ -47,7 +47,7 @@ module registers (
     output reg [31:0] read_data_1, read_data_2 // data read from register
     );
 
-    reg [31:0] registers [31:0]; // 32 registers
+    reg [31:0] registers [0:31]; // 32 registers
     
     initial begin
         $readmemb("registers.mem", registers); // read from file
@@ -161,9 +161,26 @@ module control_unit (
 endmodule
 
 // helper modules
-module mux_2x1 (
-    input in_0, in_1, control,
-    output reg out
+module mux5_2x1 (
+    input [4:0] in_0, in_1, 
+    input control,
+    output reg [4:0] out
+    );
+
+    always @(in_0, in_1, control) begin
+        if (control) begin
+            out = in_1;
+        end else begin
+            out = in_0;
+        end
+    end
+endmodule
+
+// helper modules
+module mux32_2x1 (
+    input [31:0] in_0, in_1, 
+    input control,
+    output reg [31:0] out
     );
 
     always @(in_0, in_1, control) begin
@@ -234,10 +251,10 @@ module mips (
     data_memory data_mem (alu_result, alu_result, read_reg_2, sig_mem_read, sig_mem_write, read_data);
     registers regs (instruction[25:21], instruction[20:16], write_register, write_data_reg, sig_reg_write, read_reg_1, read_reg_2);
     ALU alu (read_reg_1, alu_rt, alu_op, alu_result, zero);
-    mux_2x1 mux_1 (instruction[20:16], instruction[15:11], sig_reg_dst, write_register);
-    mux_2x1 mux_2 (read_reg_2, sext_immediate, sig_alu_src, alu_rt);
-    mux_2x1 mux_3 (alu_result, read_data, sig_mem_to_reg, write_data_reg);
-    mux_2x1 mux_4 (next_pc, branch_next_pc, sig_pc_src, pc_next);
+    mux5_2x1 mux_1 (instruction[20:16], instruction[15:11], sig_reg_dst, write_register);
+    mux32_2x1 mux_2 (read_reg_2, sext_immediate, sig_alu_src, alu_rt);
+    mux32_2x1 mux_3 (alu_result, read_data, sig_mem_to_reg, write_data_reg);
+    mux32_2x1 mux_4 (next_pc, branch_next_pc, sig_pc_src, pc_next);
     sign_extend sext (instruction[15:0], sext_immediate);
     add_4 pc_adder (pc, next_pc);
     add_shifter branch_pc_adder (next_pc, sext_immediate, branch_next_pc);
