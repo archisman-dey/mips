@@ -1,7 +1,8 @@
 CC = iverilog
 FLAGS = -Wall -Winfloop -g2005-sv
 
-all: mips.v
+all: init.py test.asm mips.v
+	python3 init.py
 	$(CC) $(FLAGS) -o test mips.v
 
 	vvp test
