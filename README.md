@@ -2,6 +2,17 @@
 
 Verilog implementation of 32-bit MIPS processor supporting the instructions add, sub, and, or, slt, lw, sw, beq. Also included is a simple assembler written in Python.
 
+## How to Run
+
+(tested on Kubuntu 20.04)
+
+**Required Packages:** ```iverilog (sudo apt install iverilog)```
+
+1. write mips assembly code in the file ```test.asm```.
+2. run ```python3 init.py``` to generate the instruction memory, data memory and register files.
+3. edit the files to provide any initial values.
+4. run ```make iverilog``` to execute the assembly code.
+
 ## Supported Instructions
 
 Instruction | Opcode | Funct | Syntax | Explanation

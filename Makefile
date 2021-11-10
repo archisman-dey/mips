@@ -7,3 +7,9 @@ all: init.py test.asm mips.v
 
 	vvp test
 	rm test
+
+iverilog: mips.v
+	$(CC) $(FLAGS) -o test mips.v
+
+	vvp test
+	rm test
